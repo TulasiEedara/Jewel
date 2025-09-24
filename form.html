@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        :root {
+            --primary-color: #ff6347;
+            --secondary-color: #f08080;
+            --text-color: #333;
+            --bg-light: #f9f9f9;
+            --bg-dark: #fff;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .form-container {
+            background-color: var(--bg-dark);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .form-container h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .product-display {
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .product-display h3 {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .product-display p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 99, 71, 0.2);
+        }
+
+        .proceed-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .proceed-button:hover {
+            background-color: #e5533d;
+        }
+    </style>
+
+    <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','YOUR_GTM_CONTAINER_ID');
+    </script>
+    </head>
+<body>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=YOUR_GTM_CONTAINER_ID"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <div class="form-container">
+        <h1>Complete Your Order</h1>
+
+        <div class="product-display">
+            <h3>Your Selected Item:</h3>
+            <p id="selected-product-info"></p>
+        </div>
+
+        <form id="order-form" action="payment.html" method="GET">
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" required>
+            </div>
+            <button type="submit" class="proceed-button">Proceed to Payment</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct'));
+            if (selectedProduct) {
+                document.getElementById('selected-product-info').textContent = `${selectedProduct.name} - $${selectedProduct.price}`;
+                
+                // GTM Data Layer Push for 'begin_checkout' event
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    event: 'begin_checkout',
+                    ecommerce: {
+                        items: [{
+                            item_id: selectedProduct.id,
+                            item_name: selectedProduct.name,
+                            price: parseFloat(selectedProduct.price)
+                        }]
+                    }
+                });
+            } else {
+                document.getElementById('selected-product-info').textContent = 'No item selected. Please go back to the home page.';
+            }
+
+            const form = document.getElementById('order-form');
+            form.addEventListener('submit', (e) => {
+                const fullName = document.getElementById('fullName').value;
+                const email = document.getElementById('email').value;
+                const address = document.getElementById('address').value;
+                localStorage.setItem('customerDetails', JSON.stringify({ fullName, email, address }));
+            });
+        });
+    </script>
+</body>
+</html>
